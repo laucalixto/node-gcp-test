@@ -1,0 +1,20 @@
+steps:
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-node-app:$COMMIT_SHA', '.']
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['push', 'gcr.io/$PROJECT_ID/my-node-app:$COMMIT_SHA']
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      entrypoint: gcloud
+      args:
+          - 'run'
+          - 'deploy'
+          - 'my-node-app' # Nome do seu serviço Cloud Run
+          - '--image'
+          - 'gcr.io/$PROJECT_ID/my-node-app:$COMMIT_SHA'
+          - '--region'
+          - 'us-central1' # Escolha sua região do Google Cloud
+          - '--platform'
+          - 'managed'
+          - '--allow-unauthenticated' # Permite acesso público ao serviço
+images:
+    - 'gcr.io/$PROJECT_ID/my-node-app:$COMMIT_SHA'
